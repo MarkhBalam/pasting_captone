@@ -8,19 +8,36 @@
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table align-middle">
-            <thead><tr><th>Name</th><th>Email</th><th>Project</th><th>Role</th><th></th></tr></thead>
-            <tbody>
-            @forelse($participants as $pt)
+            <thead>
                 <tr>
-                    <td><a class="text-decoration-none" href="{{ route('participants.show',$pt) }}">{{ $pt->full_name }}</a></td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Project</th>
+                    <th>Role</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($participants as $pt)
+                <tr>
+                    <td>
+                        <a class="text-decoration-none" href="{{ route('participants.show',$pt) }}">
+                            {{ $pt->full_name }}
+                        </a>
+                    </td>
                     <td>{{ $pt->email }}</td>
                     <td>{{ optional($pt->project)->title ?? '—' }}</td>
                     <td>{{ $pt->role_on_project ?? '—' }}</td>
-                    <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{{ route('participants.edit',$pt) }}">Edit</a></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ route('participants.edit',$pt) }}">Edit</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-delete-url="{{ route('participants.destroy',$pt) }}">Delete</button>
+                    </td>
                 </tr>
-            @empty
-                <tr><td colspan="5" class="text-center text-muted">No participants yet.</td></tr>
-            @endforelse
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No participants yet.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

@@ -8,7 +8,11 @@
                     <h2 class="h4 mb-1">{{ $project->title }}</h2>
                     <div class="text-muted">Program: {{ optional($project->program)->name ?? '—' }}</div>
                 </div>
-                <a href="{{ route('projects.edit',$project) }}" class="btn btn-outline-secondary btn-sm ms-auto">Edit</a>
+                <a href="{{ route('projects.edit',$project) }}" class="btn btn-outline-secondary btn-sm ms-auto me-2">Edit</a>
+                <button type="button" class="btn btn-outline-danger btn-sm"
+                        data-delete-url="{{ route('projects.destroy',$project) }}">
+                    Delete
+                </button>
             </div>
             <hr>
             <p class="mb-2">{{ $project->description ?? 'No description.' }}</p>

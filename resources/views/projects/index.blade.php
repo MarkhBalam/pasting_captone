@@ -27,12 +27,15 @@
                         @foreach($p->facilities as $f)
                             <span class="badge rounded-pill text-bg-light">{{ $f->name }}</span>
                         @endforeach
-                        @if($p->facilities->isEmpty()) —
-                        @endif
+                        @if($p->facilities->isEmpty()) — @endif
                     </td>
                     <td><span class="badge badge-soft">{{ $p->prototype_stage ?? '—' }}</span></td>
                     <td class="text-end">
                         <a href="{{ route('projects.edit',$p) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                data-delete-url="{{ route('projects.destroy',$p) }}">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             @empty
