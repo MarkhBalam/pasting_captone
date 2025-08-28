@@ -43,7 +43,21 @@
 {{-- Global Delete Modal --}}
 @includeIf('shared.delete-modal')
 
-{{-- Bootstrap JS --}}
+{{-- Bootstrap JS + Toasts --}}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@includeIf('shared.toasts')
+
+{{-- HTML5 client-side validation helper --}}
+<script>
+(function () {
+  'use strict';
+  document.querySelectorAll('form.needs-validation').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) { event.preventDefault(); event.stopPropagation(); }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
 </body>
 </html>
