@@ -5,6 +5,27 @@
     <a href="{{ route('participants.create') }}" class="btn btn-primary ms-auto">Add Participant</a>
 </div>
 
+{{-- Filters --}}
+<form class="card p-3 mb-3" method="get">
+  <div class="row g-2">
+    <div class="col-md-6">
+      <input class="form-control" name="q" value="{{ request('q') }}" placeholder="Search name, email, role, skill, institution">
+    </div>
+    <div class="col-md-6">
+      <select class="form-select" name="project_id">
+        <option value="">All projects</option>
+        @foreach($projects as $p)
+          <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>{{ $p->title }}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="mt-2">
+    <button class="btn btn-outline-primary btn-sm">Filter</button>
+    <a class="btn btn-link btn-sm" href="{{ route('participants.index') }}">Reset</a>
+  </div>
+</form>
+
 <div class="card p-3">
     <div class="table-responsive">
         <table class="table align-middle">

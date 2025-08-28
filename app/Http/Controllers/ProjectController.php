@@ -9,13 +9,36 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with(['program','facilities'])->latest()->paginate(15);
-        return view('projects.index', compact('projects'));
+        $q          = request('q');
+        $programId  = request('program_id');
+        $facilityId = request('facility_id');
+
+        $projects = Project::with(['program','facilities'])
+            ->when($q, fn($qry) =>
+                $qry->where(function($w) use ($q) {
+                    $w->where('title', 'like', "%{$q}%")
+                      ->orWhere('innovation_focus', 'like', "%{$q}%")
+                      ->orWhere('prototype_stage', 'like', "%{$q}%")
+                      ->orWhere('nature_of_project', 'like', "%{$q}%");
+                })
+            )
+            ->when($programId, fn($qry) => $qry->where('program_id', $programId))
+            ->when($facilityId, fn($qry) =>
+                $qry->whereHas('facilities', fn($w) => $w->where('facilities.id', $facilityId))
+            )
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $programs   = Program::orderBy('name')->get();
+        $facilities = Facility::orderBy('name')->get();
+
+        return view('projects.index', compact('projects','programs','facilities'));
     }
 
     public function create()
     {
-        $programs  = Program::orderBy('name')->get();
+        $programs   = Program::orderBy('name')->get();
         $facilities = Facility::orderBy('name')->get();
         return view('projects.create', compact('programs','facilities'));
     }
@@ -52,7 +75,7 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
-        $programs  = Program::orderBy('name')->get();
+        $programs   = Program::orderBy('name')->get();
         $facilities = Facility::orderBy('name')->get();
         return view('projects.edit', compact('project','programs','facilities'));
     }
@@ -86,7 +109,7 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('status','Project deleted');
     }
 
-    // linking methods for the pivot
+    // pivot helpers
     public function attachFacility(Project $project, Request $request)
     {
         $data = $request->validate([
