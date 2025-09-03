@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Facility;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class FacilityController extends Controller
 {
     public function index()
     {
-        $q        = request('q');            // free-text
-        $type     = request('type');         // exact match
-        $partner  = request('partner');      // exact match
-        $cap      = request('capability');   // JSON contains (array column)
+        $q       = request('q');          // free-text
+        $type    = request('type');       // exact match
+        $partner = request('partner');    // exact match
+        $cap     = request('capability'); // JSON contains (array column)
 
         $facilities = Facility::query()
             ->when($q, fn($qry) =>
@@ -84,12 +86,37 @@ class FacilityController extends Controller
         return redirect()->route('facilities.show', $facility)->with('status','Facility updated');
     }
 
-    public function destroy(Facility $facility)
+    public function destroy(Facility $facility, Request $request)
     {
-        if ($facility->projects()->exists()) {
-            return back()->withErrors('Facility has projects. Unlink projects first.');
+        $force = $request->boolean('force');
+
+        // Pre-check dependents to avoid 500s and provide a helpful message
+        $facility->loadCount(['services','equipment','projects']);
+
+        if (!$force && ($facility->services_count > 0 || $facility->equipment_count > 0)) {
+            $msg = "Facility has {$facility->services_count} service(s) and {$facility->equipment_count} equipment item(s). "
+                 . "Delete/reassign them first, or use Force Delete.";
+            return back()->with('error', $msg);
         }
-        $facility->delete();
-        return redirect()->route('facilities.index')->with('status','Facility deleted');
+
+        try {
+            DB::transaction(function () use ($facility, $force) {
+                // If forcing, remove children first so FK RESTRICT won't block the delete
+                if ($force) {
+                    $facility->services()->delete();
+                    $facility->equipment()->delete();
+                }
+
+                // Always detach from projects (many-to-many)
+                $facility->projects()->detach();
+
+                // Finally delete the facility
+                $facility->delete();
+            });
+
+            return redirect()->route('facilities.index')->with('status','Facility deleted');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Cannot delete facility: there are related records linked to it.');
+        }
     }
 }
