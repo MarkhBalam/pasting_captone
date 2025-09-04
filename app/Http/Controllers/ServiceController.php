@@ -62,4 +62,29 @@ class ServiceController extends Controller
         $service->delete();
         return redirect()->route('facilities.show', $facility)->with('status','Service deleted');
     }
+
+    public function all()
+    {
+        $q    = request('q');
+        $sort = request('sort', 'created_at');
+        $dir  = request('dir',  'desc');
+
+        $allowed = ['name','created_at'];
+        if (!in_array($sort, $allowed)) $sort = 'created_at';
+        if (!in_array($dir,  ['asc','desc'])) $dir  = 'desc';
+
+        $services = \App\Models\Service::with('facility')
+            ->when($q, fn($qry) =>
+                $qry->where(function ($w) use ($q) {
+                    $w->where('name','like',"%{$q}%")
+                      ->orWhere('description','like',"%{$q}%");
+                })
+            )
+            ->orderBy($sort, $dir)
+            ->paginate(15)
+            ->withQueryString();
+
+        // Reuse a dedicated “all” view so we don’t break the nested one
+        return view('services.all', compact('services','sort','dir'));
+    }
 }

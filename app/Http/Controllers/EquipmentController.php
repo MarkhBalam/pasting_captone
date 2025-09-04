@@ -66,4 +66,28 @@ class EquipmentController extends Controller
         $equipment->delete();
         return redirect()->route('facilities.show', $facility)->with('status','Equipment deleted');
     }
+
+    public function all()
+    {
+        $q    = request('q');
+        $sort = request('sort', 'created_at');
+        $dir  = request('dir',  'desc');
+
+        $allowed = ['name','created_at'];
+        if (!in_array($sort, $allowed)) $sort = 'created_at';
+        if (!in_array($dir,  ['asc','desc'])) $dir  = 'desc';
+
+        $equipment = \App\Models\Equipment::with('facility')
+            ->when($q, fn($qry) =>
+                $qry->where(function ($w) use ($q) {
+                    $w->where('name','like',"%{$q}%")
+                      ->orWhere('description','like',"%{$q}%");
+                })
+            )
+            ->orderBy($sort, $dir)
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('equipment.all', compact('equipment','sort','dir'));
+    }
 }

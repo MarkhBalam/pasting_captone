@@ -16,22 +16,26 @@
     </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="{{ route('projects.index') }}">Capstone</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="topnav" class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ route('projects.index') }}">Projects</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('participants.index') }}">Participants</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('programs.index') }}">Programs</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('facilities.index') }}">Facilities</a></li>
-            </ul>
-            <a href="{{ route('outcomes.index') }}" class="btn btn-outline-primary btn-sm">Outcomes</a>
-        </div>
+  <div class="container">
+    <a class="navbar-brand" href="{{ route('projects.index') }}">Capstone</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="topnav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ route('projects.index') }}">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('participants.index') }}">Participants</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('programs.index') }}">Programs</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('facilities.index') }}">Facilities</a></li>
+        {{-- New: global lists --}}
+        <li class="nav-item"><a class="nav-link" href="{{ route('services.index') }}">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a></li>
+      </ul>
+      <a href="{{ route('outcomes.index') }}" class="btn btn-outline-primary btn-sm">Outcomes</a>
     </div>
+  </div>
 </nav>
 
 <main class="container my-4">

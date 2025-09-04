@@ -24,3 +24,7 @@ Route::resource('projects.outcomes', OutcomeController::class)->only(['create','
 // Project ↔ Facility linking
 Route::post('projects/{project}/facilities', [ProjectController::class,'attachFacility'])->name('projects.facilities.attach');
 Route::delete('projects/{project}/facilities/{facility}', [ProjectController::class,'detachFacility'])->name('projects.facilities.detach');
+
+
+Route::get('/services',  [ServiceController::class,  'all'])->name('services.index');
+Route::get('/equipment', [EquipmentController::class, 'all'])->name('equipment.index');
